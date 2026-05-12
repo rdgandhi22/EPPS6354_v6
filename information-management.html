@@ -131,6 +131,7 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#assignment-8" id="toc-assignment-8" class="nav-link" data-scroll-target="#assignment-8">Assignment 8</a></li>
   <li><a href="#database-project-link" id="toc-database-project-link" class="nav-link" data-scroll-target="#database-project-link">Database Project Link</a></li>
   <li><a href="#database-project-report" id="toc-database-project-report" class="nav-link" data-scroll-target="#database-project-report">Database Project Report</a></li>
+  <li><a href="#ai-lab" id="toc-ai-lab" class="nav-link" data-scroll-target="#ai-lab">AI Lab</a></li>
   </ul>
 </nav>
     </div>
@@ -343,6 +344,1157 @@ branch (branch_name, branch_city, assets)​ | customer (ID, customer_name, cust
 <section id="database-project-report" class="level3">
 <h3 class="anchored" data-anchor-id="database-project-report">Database Project Report</h3>
 <p><a href="GandhiRicha_FinalReport.pdf" target="_blank">Book Recommender Report</a></p>
+</section>
+<section id="ai-lab" class="level3">
+<h3 class="anchored" data-anchor-id="ai-lab">AI Lab</h3>
+<p>Aggregation</p>
+<p>Step 1: PROMPT THE AI</p>
+<p>Prompt sent to ChatGPT (April, 2026):</p>
+<p>Given the following PostgreSQL database schema:</p>
+<p>CREATE TABLE classroom (</p>
+<p>building V ARCHAR(15),</p>
+<p>room_number V ARCHAR(7),</p>
+<p>capacity NUMERIC(4,0),</p>
+<p>PRIMARY KEY (building, room_number)</p>
+<p>);</p>
+<p>CREATE TABLE department (</p>
+<p>dept_name V ARCHAR(20),</p>
+<p>building V ARCHAR(15),</p>
+<p>budget NUMERIC(12,2) CHECK (budget &gt; 0),</p>
+<p>PRIMARY KEY (dept_name)</p>
+<p>);</p>
+<p>CREATE TABLE course (</p>
+<p>course_id V ARCHAR(8),</p>
+<p>title V ARCHAR(50),</p>
+<p>dept_name V ARCHAR(20),</p>
+<p>credits NUMERIC(2,0) CHECK (credits &gt; 0),</p>
+<p>PRIMARY KEY (course_id),</p>
+<p>FOREIGN KEY (dept_name) REFERENCES department(dept_name)</p>
+<p>ON DELETE SET NULL</p>
+<p>);</p>
+<p>CREATE TABLE instructor (</p>
+<p>ID V ARCHAR(5),</p>
+<p>name V ARCHAR(20) NOT NULL,</p>
+<p>dept_name V ARCHAR(20),</p>
+<p>salary NUMERIC(8,2) CHECK (salary &gt; 29000),</p>
+<p>PRIMARY KEY (ID),</p>
+<p>FOREIGN KEY (dept_name) REFERENCES department(dept_name)</p>
+<p>ON DELETE SET NULL);</p>
+<p>CREATE TABLE section (</p>
+<p>course_id V ARCHAR(8),</p>
+<p>sec_id V ARCHAR(8),</p>
+<p>semester V ARCHAR(6) CHECK (semester IN (‘Fall’, ‘Winter’, ‘Spring’, ‘Summer’)),</p>
+<p>year NUMERIC(4,0) CHECK (year &gt; 1701 AND year &lt; 2100),</p>
+<p>building V ARCHAR(15),</p>
+<p>room_number V ARCHAR(7),</p>
+<p>time_slot_id V ARCHAR(4),</p>
+<p>PRIMARY KEY (course_id, sec_id, semester, year),</p>
+<p>FOREIGN KEY (course_id) REFERENCES course(course_id)</p>
+<p>ON DELETE CASCADE,</p>
+<p>FOREIGN KEY (building, room_number) REFERENCES classroom(building,</p>
+<p>room_number)</p>
+<p>ON DELETE SET NULL</p>
+<p>);</p>
+<p>CREATE TABLE teaches (</p>
+<p>ID V ARCHAR(5),</p>
+<p>course_id V ARCHAR(8),</p>
+<p>sec_id V ARCHAR(8),</p>
+<p>semester V ARCHAR(6),</p>
+<p>year NUMERIC(4,0),</p>
+<p>PRIMARY KEY (ID, course_id, sec_id, semester, year),</p>
+<p>FOREIGN KEY (course_id, sec_id, semester, year)</p>
+<p>REFERENCES section(course_id, sec_id, semester, year)</p>
+<p>ON DELETE CASCADE,</p>
+<p>FOREIGN KEY (ID) REFERENCES instructor(ID)</p>
+<p>ON DELETE CASCADE</p>
+<p>);</p>
+<p>CREATE TABLE student (</p>
+<p>ID V ARCHAR(5),</p>
+<p>name V ARCHAR(20) NOT NULL,</p>
+<p>dept_name V ARCHAR(20),</p>
+<p>tot_cred NUMERIC(3,0) CHECK (tot_cred &gt;= 0),</p>
+<p>PRIMARY KEY (ID),</p>
+<p>FOREIGN KEY (dept_name) REFERENCES department(dept_name)</p>
+<p>ON DELETE SET NULL);</p>
+<p>CREATE TABLE takes (</p>
+<p>ID V ARCHAR(5),</p>
+<p>course_id V ARCHAR(8),</p>
+<p>sec_id V ARCHAR(8),</p>
+<p>semester V ARCHAR(6),</p>
+<p>year NUMERIC(4,0),</p>
+<p>grade V ARCHAR(2),</p>
+<p>PRIMARY KEY (ID, course_id, sec_id, semester, year),</p>
+<p>FOREIGN KEY (course_id, sec_id, semester, year)</p>
+<p>REFERENCES section(course_id, sec_id, semester, year)</p>
+<p>ON DELETE CASCADE,</p>
+<p>FOREIGN KEY (ID) REFERENCES student(ID)</p>
+<p>ON DELETE CASCADE</p>
+<p>);</p>
+<p>CREATE TABLE advisor (</p>
+<p>s_ID V ARCHAR(5),</p>
+<p>i_ID V ARCHAR(5),</p>
+<p>PRIMARY KEY (s_ID),</p>
+<p>FOREIGN KEY (i_ID) REFERENCES instructor(ID)</p>
+<p>ON DELETE SET NULL,</p>
+<p>FOREIGN KEY (s_ID) REFERENCES student(ID)</p>
+<p>ON DELETE CASCADE</p>
+<p>);</p>
+<p>CREATE TABLE time_slot (</p>
+<p>time_slot_id V ARCHAR(4),</p>
+<p>day V ARCHAR(1),</p>
+<p>start_hr NUMERIC(2) CHECK (start_hr &gt;= 0 AND start_hr &lt; 24),</p>
+<p>start_min NUMERIC(2) CHECK (start_min &gt;= 0 AND start_min &lt; 60),</p>
+<p>end_hr NUMERIC(2) CHECK (end_hr &gt;= 0 AND end_hr &lt; 24),</p>
+<p>end_min NUMERIC(2) CHECK (end_min &gt;= 0 AND end_min &lt; 60),</p>
+<p>PRIMARY KEY (time_slot_id, day, start_hr, start_min)</p>
+<p>);</p>
+<p>CREATE TABLE prereq (</p>
+<p>course_id V ARCHAR(8),</p>
+<p>prereq_id V ARCHAR(8),PRIMARY KEY (course_id, prereq_id),</p>
+<p>FOREIGN KEY (course_id) REFERENCES course(course_id)</p>
+<p>ON DELETE CASCADE,</p>
+<p>FOREIGN KEY (prereq_id) REFERENCES course(course_id)</p>
+<p>);</p>
+<p>The database contains approximately:- 2,000 students- 30,000 enrollment records in “takes”- 200</p>
+<p>courses- 100 sections- 50 instructors- 20 departments</p>
+<p>Write a SQL query to: Find the total number of course enrollments and the average total credits</p>
+<p>(tot_cred) of students in each department. Rank departments from highest enrollment count to</p>
+<p>lowest. Please use standard PostgreSQL syntax.</p>
+<p>Step 2: AI-Generated SQL (Unmodified)</p>
+<p>SELECT</p>
+<p>s.dept_name,</p>
+<p>COUNT(t.course_id) AS total_enrollments,</p>
+<p>A VG(s.tot_cred) AS avg_total_credits,</p>
+<p>RANK() OVER (ORDER BY COUNT(t.course_id) DESC) AS dept_rank</p>
+<p>FROM student s</p>
+<p>LEFT JOIN takes t</p>
+<p>ON s.ID = t.ID</p>
+<p>GROUP BY s.dept_name</p>
+<p>ORDER BY total_enrollments DESC, s.dept_name;</p>
+<p>This query:</p>
+<p>Joins student to takes using student ID, counts all enrollment records per department, and computes the average total credits of students in each department</p>
+<p>ranks departments from highest to lowest enrollment using RANK()</p>
+<p>Step 3: Run EXPLAIN ANALYZE</p>
+<p>EXPLAIN (ANALYZE, BUFFERS, FORMAT TEXT)</p>
+<p>SELECT</p>
+<p>s.dept_name,COUNT(t.course_id) AS total_enrollments,</p>
+<p>A VG(s.tot_cred) AS avg_total_credits,</p>
+<p>RANK() OVER (ORDER BY COUNT(t.course_id) DESC) AS dept_rank</p>
+<p>FROM student s</p>
+<p>LEFT JOIN takes t</p>
+<p>ON s.ID = t.ID</p>
+<p>GROUP BY s.dept_name</p>
+<p>ORDER BY total_enrollments DESC, s.dept_name;</p>
+<p>Execution Plan Output</p>
+<p>“Incremental Sort (cost=884.64..885.85 rows=20 width=57) (actual time=10.511..10.513</p>
+<p>rows=20.00 loops=1)”</p>
+<p>” Sort Key: (count(t.course_id)) DESC, s.dept_name”</p>
+<p>” Presorted Key: (count(t.course_id))”</p>
+<p>” Full-sort Groups: 1 Sort Method: quicksort Average Memory: 26kB Peak Memory: 26kB”</p>
+<p>” Buffers: shared hit=235”</p>
+<p>” -&gt; WindowAgg (cost=884.62..884.95 rows=20 width=57) (actual time=10.494..10.504</p>
+<p>rows=20.00 loops=1)”</p>
+<p>” Window: w1 AS (ORDER BY (count(t.course_id)) ROWS UNBOUNDED</p>
+<p>PRECEDING)”</p>
+<p>” Storage: Memory Maximum Storage: 17kB”</p>
+<p>” Buffers: shared hit=235”</p>
+<p>” -&gt; Sort (cost=884.60..884.65 rows=20 width=49) (actual time=10.481..10.483</p>
+<p>rows=20.00 loops=1)”</p>
+<p>” Sort Key: (count(t.course_id)) DESC”</p>
+<p>” Sort Method: quicksort Memory: 26kB”</p>
+<p>” Buffers: shared hit=235”</p>
+<p>” -&gt; HashAggregate (cost=883.92..884.17 rows=20 width=49) (actual</p>
+<p>time=10.459..10.467 rows=20.00 loops=1)”</p>
+<p>” Group Key: s.dept_name”</p>
+<p>” Batches: 1 Memory Usage: 32kB”</p>
+<p>” Buffers: shared hit=235”</p>
+<p>” -&gt; Hash Right Join (cost=60.00..658.92 rows=30000 width=17) (actual</p>
+<p>time=0.471..5.990 rows=30000.00 loops=1)”</p>
+<p>” Hash Cond: ((t.id)::text = (s.id)::text)”</p>
+<p>” Buffers: shared hit=235”</p>
+<p>” -&gt; Seq Scan on takes t (cost=0.00..520.00 rows=30000 width=9) (actual</p>
+<p>time=0.009..0.996 rows=30000.00 loops=1)”</p>
+<p>” Buffers: shared hit=220”” -&gt; Hash (cost=35.00..35.00 rows=2000 width=18) (actual time=0.443..0.443</p>
+<p>rows=2000.00 loops=1)”</p>
+<p>” Buckets: 2048 Batches: 1 Memory Usage: 119kB”</p>
+<p>” Buffers: shared hit=15”</p>
+<p>” -&gt; Seq Scan on student s (cost=0.00..35.00 rows=2000 width=18) (actual</p>
+<p>time=0.015..0.196 rows=2000.00 loops=1)”</p>
+<p>” Buffers: shared hit=15”</p>
+<p>“Planning:”</p>
+<p>” Buffers: shared hit=12”</p>
+<p>“Planning Time: 0.367 ms”</p>
+<p>“Execution Time: 10.620 ms”</p>
+<p>Step 4: IDENTIFY ISSUES</p>
+<p>Issue 1: Join Student and Takes Condition</p>
+<p>In this query: AS avg_total_credits, because the student-to-takes join occurred before</p>
+<p>aggregating, each student appears once for every row in takes, meaning that A VG(s.tot_cred) is</p>
+<p>not the average credits per student in the department, but rather a weighted average where</p>
+<p>students with more course enrollments count more times.</p>
+<p>Issue 2: Type Cast in Join Condition</p>
+<p>In the join condition: (t.id)::text = (s.id)::text. PostgreSQL is casting both varchar columns to text</p>
+<p>for the comparison. While this doesn’t prevent index use here (there is no index to use), this</p>
+<p>implicit casting pattern can prevent index usage when indexes exist.</p>
+<p>Step 5: OPTIMIZE</p>
+<p>Creating Indexes</p>
+<p>– Index for joining takes to student on ID</p>
+<p>CREATE INDEX idx_takes_id ON takes(ID);</p>
+<p>– Index for filtering takes by course/id</p>
+<p>CREATE INDEX idx_takes_id_course_id ON takes(ID, course_id);</p>
+<p>Optimized query– Original query</p>
+<p>SELECT</p>
+<p>s.dept_name,</p>
+<p>COUNT(t.course_id) AS total_enrollments,</p>
+<p>A VG(s.tot_cred) AS avg_total_credits,</p>
+<p>RANK() OVER (ORDER BY COUNT(t.course_id) DESC) AS dept_rank</p>
+<p>FROM student s</p>
+<p>LEFT JOIN takes t</p>
+<p>ON s.ID = t.ID</p>
+<p>GROUP BY s.dept_name</p>
+<p>ORDER BY total_enrollments DESC, s.dept_name;</p>
+<p>– New query</p>
+<p>WITH enrollment_counts AS (</p>
+<p>SELECT</p>
+<p>s.dept_name,</p>
+<p>COUNT(t.course_id) AS total_enrollments</p>
+<p>FROM student s</p>
+<p>LEFT JOIN takes t</p>
+<p>ON s.ID = t.ID</p>
+<p>GROUP BY s.dept_name</p>
+<p>),</p>
+<p>credit_averages AS (</p>
+<p>SELECT</p>
+<p>dept_name,</p>
+<p>A VG(tot_cred) AS avg_total_credits</p>
+<p>FROM student</p>
+<p>GROUP BY dept_name</p>
+<p>)</p>
+<p>SELECT</p>
+<p>e.dept_name,</p>
+<p>e.total_enrollments,</p>
+<p>c.avg_total_credits,</p>
+<p>RANK() OVER (ORDER BY e.total_enrollments DESC) AS dept_rank</p>
+<p>FROM enrollment_counts e</p>
+<p>JOIN credit_averages c</p>
+<p>ON e.dept_name = c.dept_name</p>
+<p>ORDER BY e.total_enrollments DESC, e.dept_name;</p>
+<p>New Execution Plan”Incremental Sort (cost=855.36..856.56 rows=20 width=57) (actual time=10.005..10.009</p>
+<p>rows=20.00 loops=1)”</p>
+<p>” Sort Key: (count(t.course_id)) DESC, s.dept_name”</p>
+<p>” Presorted Key: (count(t.course_id))”</p>
+<p>” Full-sort Groups: 1 Sort Method: quicksort Average Memory: 26kB Peak Memory: 26kB”</p>
+<p>” Buffers: shared hit=250”</p>
+<p>” -&gt; WindowAgg (cost=855.33..855.66 rows=20 width=57) (actual time=9.988..9.998</p>
+<p>rows=20.00 loops=1)”</p>
+<p>” Window: w1 AS (ORDER BY (count(t.course_id)) ROWS UNBOUNDED</p>
+<p>PRECEDING)”</p>
+<p>” Storage: Memory Maximum Storage: 17kB”</p>
+<p>” Buffers: shared hit=250”</p>
+<p>” -&gt; Sort (cost=855.31..855.36 rows=20 width=49) (actual time=9.980..9.983 rows=20.00</p>
+<p>loops=1)”</p>
+<p>” Sort Key: (count(t.course_id)) DESC”</p>
+<p>” Sort Method: quicksort Memory: 25kB”</p>
+<p>” Buffers: shared hit=250”</p>
+<p>” -&gt; Hash Join (cost=854.37..854.88 rows=20 width=49) (actual time=9.957..9.974</p>
+<p>rows=20.00 loops=1)”</p>
+<p>” Hash Cond: ((student.dept_name)::text = (s.dept_name)::text)”</p>
+<p>” Buffers: shared hit=250”</p>
+<p>” -&gt; HashAggregate (cost=45.00..45.25 rows=20 width=41) (actual</p>
+<p>time=0.445..0.457 rows=20.00 loops=1)”</p>
+<p>” Group Key: student.dept_name”</p>
+<p>” Batches: 1 Memory Usage: 32kB”</p>
+<p>” Buffers: shared hit=15”</p>
+<p>” -&gt; Seq Scan on student (cost=0.00..35.00 rows=2000 width=13) (actual</p>
+<p>time=0.009..0.083 rows=2000.00 loops=1)”</p>
+<p>” Buffers: shared hit=15”</p>
+<p>” -&gt; Hash (cost=809.12..809.12 rows=20 width=17) (actual time=9.494..9.495</p>
+<p>rows=20.00 loops=1)”</p>
+<p>” Buckets: 1024 Batches: 1 Memory Usage: 10kB”</p>
+<p>” Buffers: shared hit=235”</p>
+<p>” -&gt; HashAggregate (cost=808.92..809.12 rows=20 width=17) (actual</p>
+<p>time=9.479..9.483 rows=20.00 loops=1)”</p>
+<p>” Group Key: s.dept_name”</p>
+<p>” Batches: 1 Memory Usage: 32kB”</p>
+<p>” Buffers: shared hit=235”</p>
+<p>” -&gt; Hash Right Join (cost=60.00..658.92 rows=30000 width=13) (actual</p>
+<p>time=0.415..5.914 rows=30000.00 loops=1)“” Hash Cond: ((t.id)::text = (s.id)::text)”</p>
+<p>” Buffers: shared hit=235”</p>
+<p>” -&gt; Seq Scan on takes t (cost=0.00..520.00 rows=30000 width=9)</p>
+<p>(actual time=0.012..0.983 rows=30000.00 loops=1)”</p>
+<p>” Buffers: shared hit=220”</p>
+<p>” -&gt; Hash (cost=35.00..35.00 rows=2000 width=14) (actual</p>
+<p>time=0.387..0.387 rows=2000.00 loops=1)”</p>
+<p>” Buckets: 2048 Batches: 1 Memory Usage: 109kB”</p>
+<p>” Buffers: shared hit=15”</p>
+<p>” -&gt; Seq Scan on student s (cost=0.00..35.00 rows=2000 width=14)</p>
+<p>(actual time=0.010..0.151 rows=2000.00 loops=1)”</p>
+<p>” Buffers: shared hit=15”</p>
+<p>“Planning:”</p>
+<p>” Buffers: shared hit=12”</p>
+<p>“Planning Time: 0.416 ms”</p>
+<p>“Execution Time: 10.084 ms”</p>
+<p>Performance Comparison</p>
+<p>Metric Before ( Full Scan) After (Optimized Query) Change</p>
+<p>Scan on takes Seq Scan (30,000 rows) Seq Scan (30,000 rows) No change</p>
+<p>Buffer Pages 235 250</p>
+<p>+ 6%</p>
+<p>Execution Time 10.620 ms 10.084 ms</p>
+<p>- 6%</p>
+<p>(For the indexing portion, I partially created my own code and used ChatGPT for the other</p>
+<p>part. For optimizing the codes, I tried doing it by hand, but I wasn’t able to do it right, so I</p>
+<p>went ahead and used AI to correct it for me, which worked).Multi-Table Join:</p>
+<p>Prompt sent to ChatGPT (April, 2026):</p>
+<p>Write a SQL query to: For each instructor, list their name, department, the courses they teach, the</p>
+<p>semester and year, and the number of students enrolled in each of their sections. Include only</p>
+<p>sections with at least 10 students. Please use standard PostgreSQL syntax.</p>
+<p>AI-Generated SQL (Unmodified)</p>
+<p>SELECT</p>
+<p>i.name AS instructor_name,</p>
+<p>i.dept_name AS department,</p>
+<p>t.course_id,</p>
+<p>s.semester,</p>
+<p>s.year,</p>
+<p>COUNT(k.ID) AS student_count</p>
+<p>FROM instructor i</p>
+<p>JOIN teaches t</p>
+<p>ON i.ID = t.ID</p>
+<p>JOIN section s</p>
+<p>ON t.course_id = s.course_id</p>
+<p>AND t.sec_id = s.sec_id</p>
+<p>AND t.semester = s.semester</p>
+<p>AND t.year = s.year</p>
+<p>LEFT JOIN takes k</p>
+<p>ON s.course_id = k.course_id</p>
+<p>AND s.sec_id = k.sec_id</p>
+<p>AND s.semester = k.semester</p>
+<p>AND s.year = k.year</p>
+<p>GROUP BY</p>
+<p>i.ID,</p>
+<p>i.name,</p>
+<p>i.dept_name,</p>
+<p>t.course_id,</p>
+<p>s.sec_id,</p>
+<p>s.semester,</p>
+<p>s.year</p>
+<p>HA VING COUNT(k.ID) &gt;= 10</p>
+<p>ORDER BYi.name,</p>
+<p>s.year,</p>
+<p>s.semester,</p>
+<p>t.course_id;</p>
+<p>PART 2: EXECUTION PLAN ANALYSIS</p>
+<p>EXPLAIN (ANALYZE, BUFFERS, FORMAT TEXT)</p>
+<p>SELECT</p>
+<p>i.name AS instructor_name,</p>
+<p>i.dept_name AS department,</p>
+<p>t.course_id,</p>
+<p>s.semester,</p>
+<p>s.year,</p>
+<p>COUNT(k.ID) AS student_count</p>
+<p>FROM instructor i</p>
+<p>JOIN teaches t</p>
+<p>ON i.ID = t.ID</p>
+<p>JOIN section s</p>
+<p>ON t.course_id = s.course_id</p>
+<p>AND t.sec_id = s.sec_id</p>
+<p>AND t.semester = s.semester</p>
+<p>AND t.year = s.year</p>
+<p>LEFT JOIN takes k</p>
+<p>ON s.course_id = k.course_id</p>
+<p>AND s.sec_id = k.sec_id</p>
+<p>AND s.semester = k.semester</p>
+<p>AND s.year = k.year</p>
+<p>GROUP BY</p>
+<p>i.ID,</p>
+<p>i.name,</p>
+<p>i.dept_name,</p>
+<p>t.course_id,</p>
+<p>s.sec_id,</p>
+<p>s.semester,</p>
+<p>s.year</p>
+<p>HA VING COUNT(k.ID) &gt;= 10</p>
+<p>ORDER BY</p>
+<p>i.name,s.year,</p>
+<p>s.semester,</p>
+<p>t.course_id;</p>
+<p>Execution Plan Output</p>
+<p>“Sort (cost=2804.32..2829.32 rows=10000 width=164) (actual time=21.788..21.800</p>
+<p>rows=100.00 loops=1)”</p>
+<p>” Sort Key: i.name, s.year, s.semester, t.course_id”</p>
+<p>” Sort Method: quicksort Memory: 31kB”</p>
+<p>” Buffers: shared hit=225 read=1”</p>
+<p>” -&gt; HashAggregate (cost=1764.93..2139.93 rows=10000 width=164) (actual</p>
+<p>time=20.956..21.023 rows=100.00 loops=1)”</p>
+<p>” Group Key: s.year, s.semester, t.course_id, i.id, s.sec_id”</p>
+<p>” Filter: (count(k.id) &gt;= 10)”</p>
+<p>” Batches: 1 Memory Usage: 545kB”</p>
+<p>” Buffers: shared hit=222 read=1”</p>
+<p>” -&gt; Hash Right Join (cost=29.21..1314.93 rows=30000 width=161) (actual</p>
+<p>time=0.992..12.016 rows=30000.00 loops=1)”</p>
+<p>” Hash Cond: (((k.course_id)::text = (s.course_id)::text) AND ((k.sec_id)::text =</p>
+<p>(s.sec_id)::text) AND ((k.semester)::text = (s.semester)::text) AND (k.year = s.year))”</p>
+<p>” Buffers: shared hit=222 read=1”</p>
+<p>” -&gt; Seq Scan on takes k (cost=0.00..520.00 rows=30000 width=21) (actual</p>
+<p>time=0.012..1.046 rows=30000.00 loops=1)”</p>
+<p>” Buffers: shared hit=220”</p>
+<p>” -&gt; Hash (cost=27.21..27.21 rows=100 width=160) (actual time=0.957..0.964</p>
+<p>rows=100.00 loops=1)”</p>
+<p>” Buckets: 1024 Batches: 1 Memory Usage: 16kB”</p>
+<p>” Buffers: shared hit=2 read=1”</p>
+<p>” -&gt; Hash Join (cost=23.90..27.21 rows=100 width=160) (actual time=0.874..0.935</p>
+<p>rows=100.00 loops=1)”</p>
+<p>” Hash Cond: (((t.course_id)::text = (s.course_id)::text) AND ((t.sec_id)::text =</p>
+<p>(s.sec_id)::text) AND ((t.semester)::text = (s.semester)::text) AND (t.year = s.year))”</p>
+<p>” Buffers: shared hit=2 read=1”</p>
+<p>” -&gt; Hash Join (cost=19.90..22.16 rows=100 width=156) (actual</p>
+<p>time=0.805..0.828 rows=100.00 loops=1)”</p>
+<p>” Hash Cond: ((t.id)::text = (i.id)::text)”</p>
+<p>” Buffers: shared hit=1 read=1”</p>
+<p>” -&gt; Seq Scan on teaches t (cost=0.00..2.00 rows=100 width=21) (actual</p>
+<p>time=0.007..0.010 rows=100.00 loops=1)“” Buffers: shared hit=1”</p>
+<p>” -&gt; Hash (cost=14.40..14.40 rows=440 width=140) (actual</p>
+<p>time=0.790..0.790 rows=50.00 loops=1)”</p>
+<p>” Buckets: 1024 Batches: 1 Memory Usage: 11kB”</p>
+<p>” Buffers: shared read=1”</p>
+<p>” -&gt; Seq Scan on instructor i (cost=0.00..14.40 rows=440 width=140)</p>
+<p>(actual time=0.770..0.773 rows=50.00 loops=1)”</p>
+<p>” Buffers: shared read=1”</p>
+<p>” -&gt; Hash (cost=2.00..2.00 rows=100 width=16) (actual time=0.062..0.068</p>
+<p>rows=100.00 loops=1)”</p>
+<p>” Buckets: 1024 Batches: 1 Memory Usage: 13kB”</p>
+<p>” Buffers: shared hit=1”</p>
+<p>” -&gt; Seq Scan on section s (cost=0.00..2.00 rows=100 width=16) (actual</p>
+<p>time=0.033..0.040 rows=100.00 loops=1)”</p>
+<p>” Buffers: shared hit=1”</p>
+<p>“Planning:”</p>
+<p>” Buffers: shared hit=75 read=4 dirtied=1”</p>
+<p>“Planning Time: 4.257 ms”</p>
+<p>“Execution Time: 22.552 ms”</p>
+<p>Step 4: IDENTIFY ISSUES</p>
+<p>Issue 1: Left Join and Having Clause Condition</p>
+<p>The issue with the query is that it removes rows where no matching students exist, because</p>
+<p>groups with no matches have COUNT(k,ID) equal to zero, failing the having condition.</p>
+<p>Additionally, the left join condition doesn’t really preserve unmatched sections in the final result.</p>
+<p>Issue 2: Incorrect Aggregation</p>
+<p>If an instructor is listed multiple times in the teaches table for the same section, or if the</p>
+<p>relationship between teaches and section isn’t strictly 1:1, the join will create duplicate rows for</p>
+<p>every student in takes table.</p>
+<p>Step 5: OPTIMIZE</p>
+<p>Creating Indexes</p>
+<p>CREATE INDEX idx_takes_section_join</p>
+<p>ON takes (course_id, sec_id, semester, year);CREATE INDEX idx_teaches_id ON teaches(ID);</p>
+<p>Optimized query</p>
+<p>– Original query</p>
+<p>SELECT</p>
+<p>i.name AS instructor_name,</p>
+<p>i.dept_name AS department,</p>
+<p>t.course_id,</p>
+<p>s.semester,</p>
+<p>s.year,</p>
+<p>COUNT(k.ID) AS student_count</p>
+<p>FROM instructor i</p>
+<p>JOIN teaches t</p>
+<p>ON i.ID = t.ID</p>
+<p>JOIN section s</p>
+<p>ON t.course_id = s.course_id</p>
+<p>AND t.sec_id = s.sec_id</p>
+<p>AND t.semester = s.semester</p>
+<p>AND t.year = s.year</p>
+<p>LEFT JOIN takes k</p>
+<p>ON s.course_id = k.course_id</p>
+<p>AND s.sec_id = k.sec_id</p>
+<p>AND s.semester = k.semester</p>
+<p>AND s.year = k.year</p>
+<p>GROUP BY</p>
+<p>i.ID,</p>
+<p>i.name,</p>
+<p>i.dept_name,</p>
+<p>t.course_id,</p>
+<p>s.sec_id,</p>
+<p>s.semester,</p>
+<p>s.year</p>
+<p>HA VING COUNT(k.ID) &gt;= 10</p>
+<p>ORDER BY</p>
+<p>i.name,</p>
+<p>s.year,</p>
+<p>s.semester,t.course_id;</p>
+<p>– New query</p>
+<p>SELECT</p>
+<p>i.name AS instructor_name,</p>
+<p>i.dept_name AS department,</p>
+<p>S.course_id,</p>
+<p>S.sec_id,</p>
+<p>S.semester,</p>
+<p>s.year,</p>
+<p>COUNT(k.ID) AS student_count</p>
+<p>FROM instructor i</p>
+<p>JOIN teaches t</p>
+<p>ON i.ID = t.ID</p>
+<p>JOIN section s</p>
+<p>ON t.course_id = s.course_id</p>
+<p>AND t.sec_id = s.sec_id</p>
+<p>AND t.semester = s.semester</p>
+<p>AND t.year = s.year</p>
+<p>JOIN takes k</p>
+<p>ON s.course_id = k.course_id</p>
+<p>AND s.sec_id = k.sec_id</p>
+<p>AND s.semester = k.semester</p>
+<p>AND s.year = k.year</p>
+<p>GROUP BY</p>
+<p>i.ID,</p>
+<p>i.name,</p>
+<p>I.dept_name,</p>
+<p>S.course_id,</p>
+<p>S.sec_id,</p>
+<p>S.semester,</p>
+<p>s.year</p>
+<p>HA VING COUNT(k.ID) &gt;= 10</p>
+<p>ORDER BY</p>
+<p>i.name,</p>
+<p>S.year,</p>
+<p>S.semester,</p>
+<p>S.course_id,</p>
+<p>s.sec_id;New Execution Plan</p>
+<p>“Sort (cost=2560.44..2585.44 rows=10000 width=164) (actual time=28.013..28.019</p>
+<p>rows=100.00 loops=1)”</p>
+<p>” Sort Key: i.name, s.year, s.semester, s.course_id, s.sec_id”</p>
+<p>” Sort Method: quicksort Memory: 31kB”</p>
+<p>” Buffers: shared hit=16733”</p>
+<p>” -&gt; HashAggregate (cost=1521.06..1896.06 rows=10000 width=164) (actual</p>
+<p>time=27.806..27.883 rows=100.00 loops=1)”</p>
+<p>” Group Key: s.year, s.semester, s.course_id, s.sec_id, i.id”</p>
+<p>” Filter: (count(k.id) &gt;= 10)”</p>
+<p>” Batches: 1 Memory Usage: 545kB”</p>
+<p>” Buffers: shared hit=16733”</p>
+<p>” -&gt; Nested Loop (cost=24.20..1071.06 rows=30000 width=161) (actual</p>
+<p>time=0.108..18.415 rows=30000.00 loops=1)”</p>
+<p>” Buffers: shared hit=16733”</p>
+<p>” -&gt; Hash Join (cost=23.90..27.21 rows=100 width=172) (actual time=0.070..0.176</p>
+<p>rows=100.00 loops=1)”</p>
+<p>” Hash Cond: (((t.course_id)::text = (s.course_id)::text) AND ((t.sec_id)::text =</p>
+<p>(s.sec_id)::text) AND ((t.semester)::text = (s.semester)::text) AND (t.year = s.year))”</p>
+<p>” Buffers: shared hit=3”</p>
+<p>” -&gt; Hash Join (cost=19.90..22.16 rows=100 width=156) (actual time=0.027..0.069</p>
+<p>rows=100.00 loops=1)”</p>
+<p>” Hash Cond: ((t.id)::text = (i.id)::text)”</p>
+<p>” Buffers: shared hit=2”</p>
+<p>” -&gt; Seq Scan on teaches t (cost=0.00..2.00 rows=100 width=21) (actual</p>
+<p>time=0.008..0.014 rows=100.00 loops=1)”</p>
+<p>” Buffers: shared hit=1”</p>
+<p>” -&gt; Hash (cost=14.40..14.40 rows=440 width=140) (actual time=0.015..0.015</p>
+<p>rows=50.00 loops=1)”</p>
+<p>” Buckets: 1024 Batches: 1 Memory Usage: 11kB”</p>
+<p>” Buffers: shared hit=1”</p>
+<p>” -&gt; Seq Scan on instructor i (cost=0.00..14.40 rows=440 width=140)</p>
+<p>(actual time=0.006..0.009 rows=50.00 loops=1)”</p>
+<p>” Buffers: shared hit=1”</p>
+<p>” -&gt; Hash (cost=2.00..2.00 rows=100 width=16) (actual time=0.039..0.040</p>
+<p>rows=100.00 loops=1)”</p>
+<p>” Buckets: 1024 Batches: 1 Memory Usage: 13kB”</p>
+<p>” Buffers: shared hit=1”” -&gt; Seq Scan on section s (cost=0.00..2.00 rows=100 width=16) (actual</p>
+<p>time=0.014..0.021 rows=100.00 loops=1)”</p>
+<p>” Buffers: shared hit=1”</p>
+<p>” -&gt; Memoize (cost=0.30..12.17 rows=6 width=21) (actual time=0.019..0.160</p>
+<p>rows=300.00 loops=100)”</p>
+<p>” Cache Key: t.course_id, t.sec_id, t.semester, t.year”</p>
+<p>” Cache Mode: logical”</p>
+<p>” Hits: 0 Misses: 100 Evictions: 0 Overflows: 0 Memory Usage: 1616kB”</p>
+<p>” Buffers: shared hit=16730”</p>
+<p>” -&gt; Index Scan using idx_takes_section_join on takes k (cost=0.29..12.16 rows=6</p>
+<p>width=21) (actual time=0.018..0.105 rows=300.00 loops=100)”</p>
+<p>” Index Cond: (((course_id)::text = (t.course_id)::text) AND ((sec_id)::text =</p>
+<p>(t.sec_id)::text) AND ((semester)::text = (t.semester)::text) AND (year = t.year))”</p>
+<p>” Index Searches: 100”</p>
+<p>” Buffers: shared hit=16730”</p>
+<p>“Planning:”</p>
+<p>” Buffers: shared hit=8”</p>
+<p>“Planning Time: 0.925 ms”</p>
+<p>“Execution Time: 28.424 ms”</p>
+<p>Performance Comparison</p>
+<p>Metric Before (Full Scan) After (Indexed Filter) Change</p>
+<p>Scan on takes Seq Scan (30,000 rows) Index Scan on takes (100 index searches) No change</p>
+<p>Buffer Pages 225 16733</p>
+<p>+ 7302.21%</p>
+<p>Execution Time 22.552 ms 28.424 ms</p>
+<p>+ 26.04%</p>
+<p>(For the indexing portion, I partially created my own code and used ChatGPT for the other</p>
+<p>part. For optimizing the codes, I tried doing it by hand, but I wasn’t able to do it right, so I</p>
+<p>went ahead and used AI to correct it for me, which worked).Correlated Subquery:</p>
+<p>Prompt sent to ChatGPT (April, 2026):</p>
+<p>Write a SQL query to: Find all courses where every section ever offered had at least one student</p>
+<p>who received an ‘A’ grade.</p>
+<p>AI-Generated SQL (Unmodified)</p>
+<p>SELECT c.course_id, c.title</p>
+<p>FROM course c</p>
+<p>WHERE NOT EXISTS (</p>
+<p>SELECT 1</p>
+<p>FROM section s</p>
+<p>WHERE s.course_id = c.course_id</p>
+<p>AND NOT EXISTS (</p>
+<p>SELECT 1</p>
+<p>FROM takes t</p>
+<p>WHERE t.course_id = s.course_id</p>
+<p>AND t.sec_id = s.sec_id</p>
+<p>AND t.semester = s.semester</p>
+<p>AND t.year = s.year</p>
+<p>AND t.grade = ‘A’</p>
+<p>)</p>
+<p>);</p>
+<p>This works by returning courses for which there does not exist any section without at least one</p>
+<p>student earning an ‘A’.</p>
+<p>PART 2: EXECUTION PLAN ANALYSIS</p>
+<p>EXPLAIN (ANALYZE, BUFFERS, FORMAT TEXT)</p>
+<p>SELECT c.course_id, c.title</p>
+<p>FROM course c</p>
+<p>WHERE NOT EXISTS (</p>
+<p>SELECT 1</p>
+<p>FROM section s</p>
+<p>WHERE s.course_id = c.course_idAND NOT EXISTS (</p>
+<p>SELECT 1</p>
+<p>FROM takes t</p>
+<p>WHERE t.course_id = s.course_id</p>
+<p>AND t.sec_id = s.sec_id</p>
+<p>AND t.semester = s.semester</p>
+<p>AND t.year = s.year</p>
+<p>AND t.grade = ‘A’</p>
+<p>)</p>
+<p>);</p>
+<p>Execution Plan Output</p>
+<p>“Hash Right Anti Join (cost=6.50..606.48 rows=115 width=21) (actual time=1.652..1.664</p>
+<p>rows=115.00 loops=1)”</p>
+<p>” Hash Cond: ((s.course_id)::text = (c.course_id)::text)”</p>
+<p>” Buffers: shared hit=223”</p>
+<p>” -&gt; Nested Loop Anti Join (cost=0.00..599.25 rows=100 width=4) (actual time=1.550..1.567</p>
+<p>rows=100.00 loops=1)”</p>
+<p>” Join Filter: (((t.course_id)::text = (s.course_id)::text) AND ((t.sec_id)::text =</p>
+<p>(s.sec_id)::text) AND ((t.semester)::text = (s.semester)::text) AND (t.year = s.year))”</p>
+<p>” Buffers: shared hit=221”</p>
+<p>” -&gt; Seq Scan on section s (cost=0.00..2.00 rows=100 width=16) (actual time=0.006..0.009</p>
+<p>rows=100.00 loops=1)”</p>
+<p>” Buffers: shared hit=1”</p>
+<p>” -&gt; Materialize (cost=0.00..595.00 rows=1 width=16) (actual time=0.015..0.015</p>
+<p>rows=0.00 loops=100)”</p>
+<p>” Storage: Memory Maximum Storage: 17kB”</p>
+<p>” Buffers: shared hit=220”</p>
+<p>” -&gt; Seq Scan on takes t (cost=0.00..595.00 rows=1 width=16) (actual</p>
+<p>time=1.540..1.541 rows=0.00 loops=1)”</p>
+<p>” Filter: ((grade)::text = ‘A’::text)”</p>
+<p>” Rows Removed by Filter: 30000”</p>
+<p>” Buffers: shared hit=220”</p>
+<p>” -&gt; Hash (cost=4.00..4.00 rows=200 width=21) (actual time=0.068..0.068 rows=200.00</p>
+<p>loops=1)”</p>
+<p>” Buckets: 1024 Batches: 1 Memory Usage: 19kB”</p>
+<p>” Buffers: shared hit=2”</p>
+<p>” -&gt; Seq Scan on course c (cost=0.00..4.00 rows=200 width=21) (actual time=0.021..0.033</p>
+<p>rows=200.00 loops=1)“” Buffers: shared hit=2”</p>
+<p>“Planning:”</p>
+<p>” Buffers: shared hit=40 read=3 dirtied=2”</p>
+<p>“Planning Time: 4.602 ms”</p>
+<p>“Execution Time: 1.688 ms”</p>
+<p>STEP 4: IDENTIFY ISSUES</p>
+<p>Issue 1: Double-Negative Logic</p>
+<p>The two NOT EXISTS lines make it difficult because they return the course only if there is no</p>
+<p>section, and where there is no A student</p>
+<p>Issue 2: Courses W/O Sections</p>
+<p>Major logical edge case due to if no course has no matching rows in section, the outer subquery</p>
+<p>finds nothing.</p>
+<p>Step 5: OPTIMIZE</p>
+<p>Creating Indexes</p>
+<p>CREATE INDEX idx_section_course_id</p>
+<p>ON section (course_id);</p>
+<p>CREATE INDEX idx_takes_section_grade</p>
+<p>ON takes (course_id, sec_id, semester, year, grade);</p>
+<p>Optimized Query</p>
+<p>– Original query retained:</p>
+<p>SELECT c.course_id, c.title</p>
+<p>FROM course c</p>
+<p>WHERE NOT EXISTS (</p>
+<p>SELECT 1</p>
+<p>FROM section s</p>
+<p>WHERE s.course_id = c.course_id</p>
+<p>AND NOT EXISTS (</p>
+<p>SELECT 1FROM takes t</p>
+<p>WHERE t.course_id = s.course_id</p>
+<p>AND t.sec_id = s.sec_id</p>
+<p>AND t.semester = s.semester</p>
+<p>AND t.year = s.year</p>
+<p>AND t.grade = ‘A’</p>
+<p>)</p>
+<p>);</p>
+<p>(The original query is kept because it captures the “every section has at least one A</p>
+<p>student” condition. Alternative rewrites either changed the intended logic or produced no</p>
+<p>qualifying rows in the dataset. Indexes were implemented to strengthen the correlated</p>
+<p>conditions, although no structural rewrite was adopted.)Window Function:</p>
+<p>Prompt sent to ChatGPT (April, 2026):</p>
+<p>Write a SQL query to: For each department, rank instructors by salary from highest to lowest.</p>
+<p>Show the instructor’s name, department, salary, their rank within the department, and what</p>
+<p>percentile they fall into.</p>
+<p>AI-Generated SQL (Unmodified)</p>
+<p>SELECT</p>
+<p>name AS instructor_name,</p>
+<p>dept_name AS department,</p>
+<p>salary,</p>
+<p>RANK() OVER (</p>
+<p>PARTITION BY dept_name</p>
+<p>ORDER BY salary DESC</p>
+<p>) AS salary_rank,</p>
+<p>PERCENT_RANK() OVER (</p>
+<p>PARTITION BY dept_name</p>
+<p>ORDER BY salary DESC</p>
+<p>) AS salary_percentile</p>
+<p>FROM instructor</p>
+<p>ORDER BY department, salary_rank, instructor_name;</p>
+<p>PART 2: EXECUTION PLAN ANALYSIS</p>
+<p>EXPLAIN (ANALYZE, BUFFERS, FORMAT TEXT)</p>
+<p>SELECT</p>
+<p>name AS instructor_name,</p>
+<p>dept_name AS department,</p>
+<p>salary,</p>
+<p>RANK() OVER (</p>
+<p>PARTITION BY dept_name</p>
+<p>ORDER BY salary DESC</p>
+<p>) AS salary_rank,PERCENT_RANK() OVER (</p>
+<p>PARTITION BY dept_name</p>
+<p>ORDER BY salary DESC</p>
+<p>) AS salary_percentile</p>
+<p>FROM instructor</p>
+<p>ORDER BY department, salary_rank, instructor_name;</p>
+<p>Execution Plan Output</p>
+<p>“Incremental Sort (cost=33.80..55.62 rows=440 width=146) (actual time=0.168..0.180</p>
+<p>rows=50.00 loops=1)”</p>
+<p>” Sort Key: dept_name, (rank() OVER w1), name”</p>
+<p>” Presorted Key: dept_name”</p>
+<p>” Full-sort Groups: 2 Sort Method: quicksort Average Memory: 27kB Peak Memory: 27kB”</p>
+<p>” Buffers: shared hit=1”</p>
+<p>” -&gt; WindowAgg (cost=33.74..43.62 rows=440 width=146) (actual time=0.118..0.144</p>
+<p>rows=50.00 loops=1)”</p>
+<p>” Window: w1 AS (PARTITION BY dept_name ORDER BY salary ROWS UNBOUNDED</p>
+<p>PRECEDING)”</p>
+<p>” Storage: Memory Maximum Storage: 17kB”</p>
+<p>” Buffers: shared hit=1”</p>
+<p>” -&gt; Sort (cost=33.72..34.82 rows=440 width=130) (actual time=0.100..0.102 rows=50.00</p>
+<p>loops=1)”</p>
+<p>” Sort Key: dept_name, salary DESC”</p>
+<p>” Sort Method: quicksort Memory: 27kB”</p>
+<p>” Buffers: shared hit=1”</p>
+<p>” -&gt; Seq Scan on instructor (cost=0.00..14.40 rows=440 width=130) (actual</p>
+<p>time=0.030..0.034 rows=50.00 loops=1)”</p>
+<p>” Buffers: shared hit=1”</p>
+<p>“Planning:”</p>
+<p>” Buffers: shared hit=9”</p>
+<p>“Planning Time: 0.129 ms”</p>
+<p>“Execution Time: 0.207 ms”</p>
+<p>STEP 4: IDENTIFY ISSUES</p>
+<p>Rank() Issue</p>
+<p>Rank() skips rank numbers after tiesPercent_Rank()</p>
+<p>Percent_Rank() assigns the top row values of 0 rather than 1</p>
+<p>Sorting Windows Functions</p>
+<p>STEP 5: OPTIMIZE</p>
+<p>CREATE INDEX idx_instructor_dept_salary</p>
+<p>ON instructor (dept_name, salary DESC);</p>
+<p>CREATE INDEX idx_instructor_dept_salary_name</p>
+<p>ON instructor (dept_name, salary DESC, name);</p>
+<p>Optimized Query</p>
+<p>– Original Query</p>
+<p>SELECT</p>
+<p>name AS instructor_name,</p>
+<p>dept_name AS department,</p>
+<p>salary,</p>
+<p>RANK() OVER (</p>
+<p>PARTITION BY dept_name</p>
+<p>ORDER BY salary DESC</p>
+<p>) AS salary_rank,</p>
+<p>PERCENT_RANK() OVER (</p>
+<p>PARTITION BY dept_name</p>
+<p>ORDER BY salary DESC</p>
+<p>) AS salary_percentile</p>
+<p>FROM instructor</p>
+<p>ORDER BY department, salary_rank, instructor_name;</p>
+<p>– New Query</p>
+<p>SELECT</p>
+<p>name AS instructor_name,</p>
+<p>dept_name AS department,</p>
+<p>salary,</p>
+<p>DENSE_RANK() OVER (</p>
+<p>PARTITION BY dept_nameORDER BY salary DESC</p>
+<p>) AS salary_rank,</p>
+<p>PERCENT_RANK() OVER (</p>
+<p>PARTITION BY dept_name</p>
+<p>ORDER BY salary DESC</p>
+<p>) AS salary_percentile</p>
+<p>FROM instructor</p>
+<p>ORDER BY department, salary_rank, instructor_name;</p>
+<p>New Execution Plan</p>
+<p>“Incremental Sort (cost=2.94..6.29 rows=50 width=146) (actual time=0.268..0.295 rows=50.00</p>
+<p>loops=1)”</p>
+<p>” Sort Key: dept_name, (dense_rank() OVER w1), name”</p>
+<p>” Presorted Key: dept_name”</p>
+<p>” Full-sort Groups: 2 Sort Method: quicksort Average Memory: 27kB Peak Memory: 27kB”</p>
+<p>” Buffers: shared hit=1”</p>
+<p>” -&gt; WindowAgg (cost=2.91..4.04 rows=50 width=146) (actual time=0.202..0.244 rows=50.00</p>
+<p>loops=1)”</p>
+<p>” Window: w1 AS (PARTITION BY dept_name ORDER BY salary ROWS UNBOUNDED</p>
+<p>PRECEDING)”</p>
+<p>” Storage: Memory Maximum Storage: 17kB”</p>
+<p>” Buffers: shared hit=1”</p>
+<p>” -&gt; Sort (cost=2.91..3.04 rows=50 width=130) (actual time=0.183..0.185 rows=50.00</p>
+<p>loops=1)”</p>
+<p>” Sort Key: dept_name, salary DESC”</p>
+<p>” Sort Method: quicksort Memory: 27kB”</p>
+<p>” Buffers: shared hit=1”</p>
+<p>” -&gt; Seq Scan on instructor (cost=0.00..1.50 rows=50 width=130) (actual</p>
+<p>time=0.045..0.051 rows=50.00 loops=1)”</p>
+<p>” Buffers: shared hit=1”</p>
+<p>“Planning Time: 0.825 ms”</p>
+<p>“Execution Time: 0.370 ms”</p>
+<p>Performance Comparison</p>
+<p>Metric Before (Original Query) After (Optimized Query) Change</p>
+<p>Scan on takes Seq Scan (50 rows) Seq Scan (50 rows)</p>
+<p>Buffer Pages 1 1 No change</p>
+<p>Execution Time 0.207 ms 0.370 ms</p>
+<p>+ 50%</p>
+<p>+ 78.74%Complex Query:</p>
+<p>Prompt sent to ChatGPT (April, 2026):</p>
+<p>Write a SQL query to: “Find students who have taken courses offered by at least 3 different</p>
+<p>departments but have never taken a course taught by their own advisor.</p>
+<p>AI-Generated SQL (Unmodified)</p>
+<p>SELECT</p>
+<p>s.ID,</p>
+<p>s.name,</p>
+<p>s.dept_name</p>
+<p>FROM student s</p>
+<p>JOIN takes t</p>
+<p>ON s.ID = t.ID</p>
+<p>JOIN course c</p>
+<p>ON t.course_id = c.course_id</p>
+<p>WHERE s.ID IN (</p>
+<p>SELECT t1.ID</p>
+<p>FROM takes t1</p>
+<p>JOIN course c1</p>
+<p>ON t1.course_id = c1.course_id</p>
+<p>GROUP BY t1.ID</p>
+<p>HA VING COUNT(DISTINCT c1.dept_name) &gt;= 3</p>
+<p>)</p>
+<p>AND NOT EXISTS (</p>
+<p>SELECT 1</p>
+<p>FROM advisor a</p>
+<p>JOIN teaches te</p>
+<p>ON a.i_ID = te.ID</p>
+<p>WHERE a.s_ID = s.ID</p>
+<p>AND te.course_id = t.course_id</p>
+<p>AND te.sec_id = t.sec_id</p>
+<p>AND te.semester = t.semester</p>
+<p>AND te.year = t.year</p>
+<p>)GROUP BY s.ID, s.name, s.dept_name</p>
+<p>ORDER BY s.ID;</p>
+<p>PART 2: EXECUTION PLAN ANALYSIS</p>
+<p>EXPLAIN (ANALYZE, BUFFERS, FORMAT TEXT)</p>
+<p>SELECT</p>
+<p>s.ID,</p>
+<p>s.name,</p>
+<p>s.dept_name</p>
+<p>FROM student s</p>
+<p>JOIN takes t</p>
+<p>ON s.ID = t.ID</p>
+<p>JOIN course c</p>
+<p>ON t.course_id = c.course_id</p>
+<p>WHERE s.ID IN (</p>
+<p>SELECT t1.ID</p>
+<p>FROM takes t1</p>
+<p>JOIN course c1</p>
+<p>ON t1.course_id = c1.course_id</p>
+<p>GROUP BY t1.ID</p>
+<p>HA VING COUNT(DISTINCT c1.dept_name) &gt;= 3</p>
+<p>)</p>
+<p>AND NOT EXISTS (</p>
+<p>SELECT 1</p>
+<p>FROM advisor a</p>
+<p>JOIN teaches te</p>
+<p>ON a.i_ID = te.ID</p>
+<p>WHERE a.s_ID = s.ID</p>
+<p>AND te.course_id = t.course_id</p>
+<p>AND te.sec_id = t.sec_id</p>
+<p>AND te.semester = t.semester</p>
+<p>AND te.year = t.year</p>
+<p>)</p>
+<p>GROUP BY s.ID, s.name, s.dept_name</p>
+<p>ORDER BY s.ID;</p>
+<p>Execution Data Output”Group (cost=4253.80..4253.81 rows=1 width=20) (actual time=165.906..168.686</p>
+<p>rows=2000.00 loops=1)”</p>
+<p>” Group Key: s.id”</p>
+<p>” Buffers: shared hit=59373”</p>
+<p>” -&gt; Sort (cost=4253.80..4253.81 rows=1 width=20) (actual time=165.891..166.894</p>
+<p>rows=29387.00 loops=1)”</p>
+<p>” Sort Key: s.id”</p>
+<p>” Sort Method: quicksort Memory: 1960kB”</p>
+<p>” Buffers: shared hit=59373”</p>
+<p>” -&gt; Nested Loop (cost=3378.41..4253.79 rows=1 width=20) (actual time=40.766..120.575</p>
+<p>rows=29387.00 loops=1)”</p>
+<p>” Buffers: shared hit=59373”</p>
+<p>” -&gt; Hash Anti Join (cost=3378.27..4253.63 rows=1 width=24) (actual</p>
+<p>time=40.732..63.940 rows=29387.00 loops=1)”</p>
+<p>” Hash Cond: (((s.id)::text = (a.s_id)::text) AND ((t.course_id)::text =</p>
+<p>(te.course_id)::text) AND ((t.sec_id)::text = (te.sec_id)::text) AND ((t.semester)::text =</p>
+<p>(te.semester)::text) AND (t.year = te.year))”</p>
+<p>” Buffers: shared hit=599”</p>
+<p>” -&gt; Hash Join (cost=3184.44..3809.67 rows=10005 width=36) (actual</p>
+<p>time=38.262..52.475 rows=30000.00 loops=1)”</p>
+<p>” Hash Cond: ((t.id)::text = (s.id)::text)”</p>
+<p>” Buffers: shared hit=587”</p>
+<p>” -&gt; Hash Join (cost=3124.44..3723.36 rows=10005 width=26) (actual</p>
+<p>time=37.867..46.224 rows=30000.00 loops=1)”</p>
+<p>” Hash Cond: ((t.id)::text = (t1.id)::text)”</p>
+<p>” Buffers: shared hit=572”</p>
+<p>” -&gt; Seq Scan on takes t (cost=0.00..520.00 rows=30000 width=21) (actual</p>
+<p>time=0.005..1.267 rows=30000.00 loops=1)”</p>
+<p>” Buffers: shared hit=220”</p>
+<p>” -&gt; Hash (cost=3116.10..3116.10 rows=667 width=5) (actual</p>
+<p>time=37.847..37.850 rows=2000.00 loops=1)”</p>
+<p>” Buckets: 2048 (originally 1024) Batches: 1 (originally 1) Memory</p>
+<p>Usage: 90kB”</p>
+<p>” Buffers: shared hit=352”</p>
+<p>” -&gt; GroupAggregate (cost=1.71..3116.10 rows=667 width=5) (actual</p>
+<p>time=0.141..37.556 rows=2000.00 loops=1)”</p>
+<p>” Group Key: t1.id”</p>
+<p>” Filter: (count(DISTINCT c1.dept_name) &gt;= 3)”</p>
+<p>” Buffers: shared hit=352”” -&gt; Incremental Sort (cost=1.71..2941.10 rows=30000 width=14)</p>
+<p>(actual time=0.135..33.718 rows=30000.00 loops=1)”</p>
+<p>” Sort Key: t1.id, c1.dept_name”</p>
+<p>” Presorted Key: t1.id”</p>
+<p>” Full-sort Groups: 757 Sort Method: quicksort Average</p>
+<p>Memory: 26kB Peak Memory: 26kB”</p>
+<p>” Buffers: shared hit=352”</p>
+<p>” -&gt; Nested Loop (cost=0.44..1940.07 rows=30000 width=14)</p>
+<p>(actual time=0.021..10.373 rows=30000.00 loops=1)”</p>
+<p>” Buffers: shared hit=352”</p>
+<p>” -&gt; Index Only Scan using takes_pkey on takes t1</p>
+<p>(cost=0.29..1178.29 rows=30000 width=9) (actual time=0.008..2.735 rows=30000.00 loops=1)”</p>
+<p>” Heap Fetches: 0”</p>
+<p>” Index Searches: 1”</p>
+<p>” Buffers: shared hit=182”</p>
+<p>” -&gt; Memoize (cost=0.15..0.17 rows=1 width=13) (actual</p>
+<p>time=0.000..0.000 rows=1.00 loops=30000)”</p>
+<p>” Cache Key: t1.course_id”</p>
+<p>” Cache Mode: logical”</p>
+<p>” Hits: 29915 Misses: 85 Evictions: 0 Overflows: 0</p>
+<p>Memory Usage: 10kB”</p>
+<p>” Buffers: shared hit=170”</p>
+<p>” -&gt; Index Scan using course_pkey on course c1</p>
+<p>(cost=0.14..0.16 rows=1 width=13) (actual time=0.002..0.002 rows=1.00 loops=85)”</p>
+<p>” Index Cond: ((course_id)::text =</p>
+<p>(t1.course_id)::text)”</p>
+<p>” Index Searches: 85”</p>
+<p>” Buffers: shared hit=170”</p>
+<p>” -&gt; Hash (cost=35.00..35.00 rows=2000 width=20) (actual time=0.386..0.387</p>
+<p>rows=2000.00 loops=1)”</p>
+<p>” Buckets: 2048 Batches: 1 Memory Usage: 123kB”</p>
+<p>” Buffers: shared hit=15”</p>
+<p>” -&gt; Seq Scan on student s (cost=0.00..35.00 rows=2000 width=20) (actual</p>
+<p>time=0.016..0.148 rows=2000.00 loops=1)”</p>
+<p>” Buffers: shared hit=15”</p>
+<p>” -&gt; Hash (cost=104.64..104.64 rows=3964 width=21) (actual time=2.443..2.445</p>
+<p>rows=3951.00 loops=1)”</p>
+<p>” Buckets: 4096 Batches: 1 Memory Usage: 244kB”</p>
+<p>” Buffers: shared hit=12”” -&gt; Hash Join (cost=56.00..104.64 rows=3964 width=21) (actual</p>
+<p>time=0.598..1.250 rows=3951.00 loops=1)”</p>
+<p>” Hash Cond: ((te.id)::text = (a.i_id)::text)”</p>
+<p>” Buffers: shared hit=12”</p>
+<p>” -&gt; Seq Scan on teaches te (cost=0.00..2.00 rows=100 width=21) (actual</p>
+<p>time=0.034..0.041 rows=100.00 loops=1)”</p>
+<p>” Buffers: shared hit=1”</p>
+<p>” -&gt; Hash (cost=31.00..31.00 rows=2000 width=10) (actual</p>
+<p>time=0.550..0.550 rows=2000.00 loops=1)”</p>
+<p>” Buckets: 2048 Batches: 1 Memory Usage: 102kB”</p>
+<p>” Buffers: shared hit=11”</p>
+<p>” -&gt; Seq Scan on advisor a (cost=0.00..31.00 rows=2000 width=10)</p>
+<p>(actual time=0.019..0.229 rows=2000.00 loops=1)”</p>
+<p>” Buffers: shared hit=11”</p>
+<p>” -&gt; Index Only Scan using course_pkey on course c (cost=0.14..0.16 rows=1 width=4)</p>
+<p>(actual time=0.002..0.002 rows=1.00 loops=29387)”</p>
+<p>” Index Cond: (course_id = (t.course_id)::text)”</p>
+<p>” Heap Fetches: 29387”</p>
+<p>” Index Searches: 29387”</p>
+<p>” Buffers: shared hit=58774”</p>
+<p>“Planning:”</p>
+<p>” Buffers: shared hit=36”</p>
+<p>“Planning Time: 1.067 ms”</p>
+<p>“Execution Time: 169.172 ms”</p>
+<p>STEP 4: IDENTIFY ISSUES</p>
+<p>GROUP BY Issue</p>
+<p>For this issue, it is an issue since it seems to be mainly used to remove duplicate rows created by</p>
+<p>the joins rather than the true performance aggregation.</p>
+<p>Join Course Issue</p>
+<p>It’s unnecessary due to not contain columns from course being used outside the subquery.</p>
+<p>STEP 5: OPTIMIZE</p>
+<p>CREATE INDEX idx_takes_id_course</p>
+<p>ON takes (ID, course_id);CREATE INDEX idx_course_course_id_dept</p>
+<p>ON course (course_id, dept_name);</p>
+<p>CREATE INDEX idx_advisor_s_id_i_id</p>
+<p>ON advisor (s_ID, i_ID);</p>
+<p>Optimizing Queries</p>
+<p>– Original query</p>
+<p>SELECT</p>
+<p>s.ID,</p>
+<p>s.name,</p>
+<p>s.dept_name</p>
+<p>FROM student s</p>
+<p>JOIN takes t</p>
+<p>ON s.ID = t.ID</p>
+<p>JOIN course c</p>
+<p>ON t.course_id = c.course_id</p>
+<p>WHERE s.ID IN (</p>
+<p>SELECT t1.ID</p>
+<p>FROM takes t1</p>
+<p>JOIN course c1</p>
+<p>ON t1.course_id = c1.course_id</p>
+<p>GROUP BY t1.ID</p>
+<p>HA VING COUNT(DISTINCT c1.dept_name) &gt;= 3</p>
+<p>)</p>
+<p>AND NOT EXISTS (</p>
+<p>SELECT 1</p>
+<p>FROM advisor a</p>
+<p>JOIN teaches te</p>
+<p>ON a.i_ID = te.ID</p>
+<p>WHERE a.s_ID = s.ID</p>
+<p>AND te.course_id = t.course_id</p>
+<p>AND te.sec_id = t.sec_id</p>
+<p>AND te.semester = t.semester</p>
+<p>AND te.year = t.year</p>
+<p>)</p>
+<p>GROUP BY s.ID, s.name, s.dept_name</p>
+<p>ORDER BY s.ID;– New query</p>
+<p>SELECT</p>
+<p>s.ID,</p>
+<p>s.name,</p>
+<p>s.dept_name</p>
+<p>FROM student s</p>
+<p>JOIN takes t</p>
+<p>ON s.ID = t.ID</p>
+<p>WHERE s.ID IN (</p>
+<p>SELECT t1.ID</p>
+<p>FROM takes t1</p>
+<p>JOIN course c1</p>
+<p>ON t1.course_id = c1.course_id</p>
+<p>GROUP BY t1.ID</p>
+<p>HA VING COUNT(DISTINCT c1.dept_name) &gt;= 3</p>
+<p>)</p>
+<p>AND NOT EXISTS (</p>
+<p>SELECT 1</p>
+<p>FROM advisor a</p>
+<p>JOIN teaches te</p>
+<p>ON a.i_ID = te.ID</p>
+<p>WHERE a.s_ID = s.ID</p>
+<p>AND te.course_id = t.course_id</p>
+<p>AND te.sec_id = t.sec_id</p>
+<p>AND te.semester = t.semester</p>
+<p>AND te.year = t.year</p>
+<p>)</p>
+<p>GROUP BY s.ID, s.name, s.dept_name</p>
+<p>ORDER BY s.ID;</p>
+<p>New Execution Plan</p>
+<p>“Group (cost=3989.64..3989.65 rows=1 width=20) (actual time=99.870..102.368 rows=2000.00</p>
+<p>loops=1)”</p>
+<p>” Group Key: s.id”</p>
+<p>” Buffers: shared hit=533”</p>
+<p>” -&gt; Sort (cost=3989.64..3989.64 rows=1 width=20) (actual time=99.865..100.716</p>
+<p>rows=29387.00 loops=1)“” Sort Key: s.id”</p>
+<p>” Sort Method: quicksort Memory: 1960kB”</p>
+<p>” Buffers: shared hit=533”</p>
+<p>” -&gt; Hash Anti Join (cost=3114.27..3989.63 rows=1 width=20) (actual</p>
+<p>time=37.607..55.641 rows=29387.00 loops=1)”</p>
+<p>” Hash Cond: (((s.id)::text = (a.s_id)::text) AND ((t.course_id)::text =</p>
+<p>(te.course_id)::text) AND ((t.sec_id)::text = (te.sec_id)::text) AND ((t.semester)::text =</p>
+<p>(te.semester)::text) AND (t.year = te.year))”</p>
+<p>” Buffers: shared hit=533”</p>
+<p>” -&gt; Hash Join (cost=2920.44..3545.67 rows=10005 width=36) (actual</p>
+<p>time=35.959..47.491 rows=30000.00 loops=1)”</p>
+<p>” Hash Cond: ((t.id)::text = (s.id)::text)”</p>
+<p>” Buffers: shared hit=521”</p>
+<p>” -&gt; Hash Join (cost=2860.44..3459.36 rows=10005 width=26) (actual</p>
+<p>time=35.589..42.191 rows=30000.00 loops=1)”</p>
+<p>” Hash Cond: ((t.id)::text = (t1.id)::text)”</p>
+<p>” Buffers: shared hit=506”</p>
+<p>” -&gt; Seq Scan on takes t (cost=0.00..520.00 rows=30000 width=21) (actual</p>
+<p>time=0.005..1.194 rows=30000.00 loops=1)”</p>
+<p>” Buffers: shared hit=220”</p>
+<p>” -&gt; Hash (cost=2852.10..2852.10 rows=667 width=5) (actual</p>
+<p>time=35.574..35.577 rows=2000.00 loops=1)”</p>
+<p>” Buckets: 2048 (originally 1024) Batches: 1 (originally 1) Memory Usage:</p>
+<p>90kB”</p>
+<p>” Buffers: shared hit=286”</p>
+<p>” -&gt; GroupAggregate (cost=1.57..2852.10 rows=667 width=5) (actual</p>
+<p>time=0.145..35.264 rows=2000.00 loops=1)”</p>
+<p>” Group Key: t1.id”</p>
+<p>” Filter: (count(DISTINCT c1.dept_name) &gt;= 3)”</p>
+<p>” Buffers: shared hit=286”</p>
+<p>” -&gt; Incremental Sort (cost=1.57..2677.10 rows=30000 width=14)</p>
+<p>(actual time=0.140..31.640 rows=30000.00 loops=1)”</p>
+<p>” Sort Key: t1.id, c1.dept_name”</p>
+<p>” Presorted Key: t1.id”</p>
+<p>” Full-sort Groups: 757 Sort Method: quicksort Average Memory:</p>
+<p>26kB Peak Memory: 26kB”</p>
+<p>” Buffers: shared hit=286”</p>
+<p>” -&gt; Nested Loop (cost=0.44..1676.07 rows=30000 width=14)</p>
+<p>(actual time=0.022..9.308 rows=30000.00 loops=1)”</p>
+<p>” Buffers: shared hit=286”” -&gt; Index Only Scan using idx_takes_id_course on takes t1</p>
+<p>(cost=0.29..914.29 rows=30000 width=9) (actual time=0.008..2.053 rows=30000.00 loops=1)”</p>
+<p>” Heap Fetches: 0”</p>
+<p>” Index Searches: 1”</p>
+<p>” Buffers: shared hit=116”</p>
+<p>” -&gt; Memoize (cost=0.15..0.17 rows=1 width=13) (actual</p>
+<p>time=0.000..0.000 rows=1.00 loops=30000)”</p>
+<p>” Cache Key: t1.course_id”</p>
+<p>” Cache Mode: logical”</p>
+<p>” Hits: 29915 Misses: 85 Evictions: 0 Overflows: 0 Memory</p>
+<p>Usage: 10kB”</p>
+<p>” Buffers: shared hit=170”</p>
+<p>” -&gt; Index Only Scan using idx_course_course_id_dept on</p>
+<p>course c1 (cost=0.14..0.16 rows=1 width=13) (actual time=0.002..0.002 rows=1.00 loops=85)”</p>
+<p>” Index Cond: (course_id = (t1.course_id)::text)”</p>
+<p>” Heap Fetches: 85”</p>
+<p>” Index Searches: 85”</p>
+<p>” Buffers: shared hit=170”</p>
+<p>” -&gt; Hash (cost=35.00..35.00 rows=2000 width=20) (actual time=0.362..0.363</p>
+<p>rows=2000.00 loops=1)”</p>
+<p>” Buckets: 2048 Batches: 1 Memory Usage: 123kB”</p>
+<p>” Buffers: shared hit=15”</p>
+<p>” -&gt; Seq Scan on student s (cost=0.00..35.00 rows=2000 width=20) (actual</p>
+<p>time=0.014..0.141 rows=2000.00 loops=1)”</p>
+<p>” Buffers: shared hit=15”</p>
+<p>” -&gt; Hash (cost=104.64..104.64 rows=3964 width=21) (actual time=1.631..1.633</p>
+<p>rows=3951.00 loops=1)”</p>
+<p>” Buckets: 4096 Batches: 1 Memory Usage: 244kB”</p>
+<p>” Buffers: shared hit=12”</p>
+<p>” -&gt; Hash Join (cost=56.00..104.64 rows=3964 width=21) (actual</p>
+<p>time=0.394..0.783 rows=3951.00 loops=1)”</p>
+<p>” Hash Cond: ((te.id)::text = (a.i_id)::text)”</p>
+<p>” Buffers: shared hit=12”</p>
+<p>” -&gt; Seq Scan on teaches te (cost=0.00..2.00 rows=100 width=21) (actual</p>
+<p>time=0.044..0.048 rows=100.00 loops=1)”</p>
+<p>” Buffers: shared hit=1”</p>
+<p>” -&gt; Hash (cost=31.00..31.00 rows=2000 width=10) (actual time=0.338..0.338</p>
+<p>rows=2000.00 loops=1)”</p>
+<p>” Buckets: 2048 Batches: 1 Memory Usage: 102kB”</p>
+<p>” Buffers: shared hit=11”” -&gt; Seq Scan on advisor a (cost=0.00..31.00 rows=2000 width=10) (actual</p>
+<p>time=0.014..0.146 rows=2000.00 loops=1)”</p>
+<p>” Buffers: shared hit=11”</p>
+<p>“Planning:”</p>
+<p>” Buffers: shared hit=32”</p>
+<p>“Planning Time: 1.665 ms”</p>
+<p>“Execution Time: 102.977 ms”</p>
+<p>Performance Comparison</p>
+<p>Metric Before (Full Scan) After (Indexed Filter) Change</p>
+<p>Scan on takes Seq Scan (30,000 rows) Seq Scan (30,000 rows) - 5.76%</p>
+<p>Buffer Pages 59,373 533</p>
+<p>- 99.10%</p>
+<p>Execution Time 169.172 ms 102.977 ms</p>
+<p>- 39.13%</p>
+<ul>
+<li>I used ChatGPT as a support resource while completing this lab to help check SQL syntax, review query logic, and troubleshoot errors. Some suggested corrections and query examples were used as guidance after reviewing them myself. All final responses and explanations submitted reflect my own understanding and work</li>
+</ul>
+<!-- -->
+<ul>
+<li>Across all queries, the AI consistently performed well in generating outputs with accurate queries for multi-table joins, correlated subqueries, window functions, and other complex SQL operations. However, it did not create any indexes unless I specifically prompted it to do so for all five queries. For instance, in Query 4, ChatGPT initially returned 50 rows using sequential scans, but after manually prompting for indexing, it again returned 50 rows with improved optimization. Because of this, I would not fully rely on AI-generated queries without reviewing them first, especially when working with queries for the first time. It is important to test and validate the queries, as well as compare them with outputs from other AI models. Without verification, AI-generated outputs could lead to incorrect schema designs, tables, indexes, or other database structures. I would consider using AI query generation as a support tool when building schemas or creating additional attributes, but I would still verify the generated queries with one or two other AI models before executing them. Overall, this exercise helped me better understand how to use AI for SQL optimization while also recognizing the importance of critically evaluating AI-generated query outputs</li>
+</ul>
 
 
 </section>
